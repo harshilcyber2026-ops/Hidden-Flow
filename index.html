@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hidden Flow — FlagVault CTF</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;800;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+/* FLAGVAULT CTF — SHARED STYLESHEET (fully inlined) */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#03080c;--surface:#070f18;--surface2:#0c1a28;--border:#164060;--border2:#164060;--accent:#00e8c8;--accent2:#ff2d6b;--accent3:#f5a623;--accent4:#7c3aed;--accent5:#3498db;--accent6:#ff003c;--text:#b8cdd9;--text-dim:#3d6070;--text-hi:#e8f4f8;--glow-c:rgba(0,232,200,0.35);--glow-r:rgba(255,45,107,0.35);--font-mono:'Share Tech Mono',monospace;--font-hud:'Orbitron',sans-serif;--font-body:'Exo 2',sans-serif;--radius:2px;--transition:0.22s cubic-bezier(0.4,0,0.2,1)}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.65;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.06) 3px,rgba(0,0,0,0.06) 4px);pointer-events:none}
+body::after{content:'';position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(0,232,200,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,232,200,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+h1,h2,h3{font-family:var(--font-hud);letter-spacing:1px;color:var(--text-hi)}
+p{font-family:var(--font-body);font-weight:300}
+a{color:var(--accent);text-decoration:none;transition:color var(--transition)}
+a:hover{color:var(--text-hi)}
+code,.mono{font-family:var(--font-mono);background:rgba(0,232,200,0.06);border:1px solid var(--border);padding:2px 6px;font-size:.88em;color:var(--accent)}
+.nav{position:sticky;top:0;z-index:500;background:rgba(3,8,12,.96);border-bottom:1px solid var(--border);backdrop-filter:blur(14px);padding:0 2rem;height:58px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{font-family:var(--font-hud);font-size:1rem;font-weight:800;color:var(--text-hi);letter-spacing:3px;text-decoration:none;display:flex;align-items:center;gap:.6rem}
+.nav-brand .bracket{color:var(--accent)}.nav-brand .brand-flag{color:var(--accent2)}
+.nav-links{display:flex;align-items:center;gap:.25rem;list-style:none;flex-wrap:wrap}
+.nav-links a{color:var(--text-dim);font-family:var(--font-mono);font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;padding:.4rem .8rem;border:1px solid transparent;border-radius:var(--radius);transition:all var(--transition)}
+.nav-links a:hover,.nav-links a.active{color:var(--accent);border-color:var(--border2);background:rgba(0,232,200,.05)}
+.nav-links a.active::before{content:'> '}
+.nav-status{display:flex;align-items:center;gap:.5rem;font-family:var(--font-mono);font-size:.68rem;color:var(--text-dim)}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.page-wrap{position:relative;z-index:1;max-width:1260px;margin:0 auto;padding:3rem 2rem 6rem}
+.page-header{margin-bottom:3rem;border-left:3px solid var(--accent);padding-left:1.5rem;position:relative}
+.page-header::before{content:attr(data-index);position:absolute;right:0;top:0;font-family:var(--font-hud);font-size:5rem;font-weight:900;color:rgba(0,232,200,.04);line-height:1;pointer-events:none}
+.page-eyebrow{font-family:var(--font-mono);font-size:.68rem;letter-spacing:4px;color:var(--accent);text-transform:uppercase;margin-bottom:.5rem}
+.page-title{font-size:clamp(1.8rem,4vw,3rem);font-weight:900;color:var(--text-hi);line-height:1.1;margin-bottom:.8rem}
+.page-title .hl{color:var(--accent)}.page-title .hl2{color:var(--accent2)}
+.page-desc{font-size:.88rem;color:var(--text-dim);max-width:580px;font-family:var(--font-mono)}
+.sec-divider{display:flex;align-items:center;gap:1rem;margin:2.5rem 0 1.8rem}
+.sec-divider h3{font-size:.7rem;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;white-space:nowrap}
+.sec-divider::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--border2),transparent)}
+.sec-divider::before{content:'//';font-family:var(--font-mono);color:var(--accent);font-size:.8rem}
+.tag{display:inline-block;font-family:var(--font-mono);font-size:.62rem;letter-spacing:1.5px;text-transform:uppercase;padding:2px 8px;border-radius:20px;border:1px solid}
+.tag-green{color:var(--accent);border-color:rgba(0,232,200,.3);background:rgba(0,232,200,.07)}
+.tag-red{color:var(--accent2);border-color:rgba(255,45,107,.3);background:rgba(255,45,107,.07)}
+.tag-amber{color:var(--accent3);border-color:rgba(245,166,35,.3);background:rgba(245,166,35,.07)}
+.tag-purple{color:#a78bfa;border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.07)}
+.hints-container{margin-bottom:1.5rem;display:flex;flex-direction:column;gap:.6rem}
+.hint-item{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.hint-toggle{width:100%;text-align:left;background:var(--surface2);border:none;cursor:pointer;padding:.6rem 1rem;display:flex;align-items:center;gap:.6rem;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);transition:background var(--transition),color var(--transition)}
+.hint-toggle:hover{background:rgba(245,166,35,.08);color:var(--accent3)}
+.hint-toggle .hint-num{background:rgba(245,166,35,.12);color:var(--accent3);border:1px solid rgba(245,166,35,.3);padding:1px 6px;font-size:.6rem;letter-spacing:1px}
+.hint-cost{margin-left:auto;color:var(--accent2);font-size:.65rem}
+.hint-content{display:none;padding:.8rem 1rem;font-family:var(--font-mono);font-size:.78rem;color:var(--accent3);background:rgba(245,166,35,.04);border-top:1px solid rgba(245,166,35,.15);line-height:1.8}
+.hint-item.revealed .hint-content{display:block;animation:slideDown .2s ease}
+.hint-item.revealed .hint-toggle{color:var(--accent3)}
+.flag-format{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent2);padding:.9rem 1.2rem;font-family:var(--font-mono);font-size:.82rem;color:var(--text-dim);margin-bottom:1.5rem;display:flex;align-items:center;gap:.8rem}
+.flag-format strong{color:var(--accent2)}
+.submit-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin-top:3rem;position:relative;overflow:hidden}
+.submit-section::before{content:'SUBMIT FLAG';position:absolute;right:1.5rem;top:1.5rem;font-family:var(--font-hud);font-size:3.5rem;font-weight:900;color:rgba(0,232,200,.03);pointer-events:none;line-height:1}
+.submit-title{font-family:var(--font-hud);font-size:1rem;color:var(--text-hi);margin-bottom:.4rem;display:flex;align-items:center;gap:.6rem}
+.submit-title::before{content:'⚑';color:var(--accent2)}
+.submit-sub{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);margin-bottom:1.5rem}
+.form-control{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:.7rem 1rem;font-family:var(--font-mono);font-size:.85rem;color:var(--text-hi);outline:none;transition:border-color var(--transition),box-shadow var(--transition);width:100%;appearance:none}
+.form-control::placeholder{color:var(--text-dim);font-size:.78rem}
+.form-control:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(0,232,200,.12),0 0 12px rgba(0,232,200,.08)}
+.flag-input-wrap{position:relative;margin-bottom:1.2rem}
+.flag-input-wrap .prefix{position:absolute;left:1rem;top:50%;transform:translateY(-50%);font-family:var(--font-mono);font-size:.78rem;color:var(--accent2);pointer-events:none;white-space:nowrap}
+.flag-input-wrap .form-control{padding-left:7.8rem;letter-spacing:1px}
+.btn{font-family:var(--font-hud);font-size:.72rem;letter-spacing:3px;text-transform:uppercase;padding:.8rem 2rem;border:none;border-radius:var(--radius);cursor:pointer;transition:all var(--transition);position:relative;overflow:hidden}
+.btn::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);transform:translateX(-100%);transition:transform .5s}
+.btn:hover::after{transform:translateX(100%)}
+.btn-primary{background:var(--accent);color:var(--bg);font-weight:600}
+.btn-primary:hover{background:#00fff0;box-shadow:0 0 20px var(--glow-c);transform:translateY(-1px)}
+.btn-danger{background:transparent;color:var(--accent2);border:1px solid var(--accent2)}
+.btn-danger:hover{background:rgba(255,45,107,.1);box-shadow:0 0 12px var(--glow-r)}
+.submit-result{margin-top:1rem;padding:.75rem 1rem;border-radius:var(--radius);font-family:var(--font-mono);font-size:.8rem;display:none}
+.submit-result.correct{display:block;background:rgba(0,232,200,.08);border:1px solid rgba(0,232,200,.3);color:var(--accent)}
+.submit-result.incorrect{display:block;background:rgba(255,45,107,.08);border:1px solid rgba(255,45,107,.3);color:var(--accent2)}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+.tool-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;transition:all var(--transition);position:relative;overflow:hidden}
+.tool-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--tool-color,var(--accent));transform:scaleX(0);transition:transform var(--transition)}
+.tool-card:hover{border-color:var(--border2);background:var(--surface2)}
+.tool-card:hover::before{transform:scaleX(1)}
+.tool-icon{font-size:1.4rem;margin-bottom:.6rem;display:block}
+.tool-name{font-family:var(--font-hud);font-size:.8rem;font-weight:600;color:var(--text-hi);margin-bottom:.3rem}
+.tool-tag{font-family:var(--font-mono);font-size:.62rem;letter-spacing:2px;color:var(--tool-color,var(--accent));text-transform:uppercase;margin-bottom:.5rem;display:block}
+.tool-desc{font-size:.75rem;color:var(--text-dim);font-family:var(--font-mono);line-height:1.6}
+.footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.footer-brand{font-family:var(--font-hud);font-size:.75rem;color:var(--text-dim);letter-spacing:2px}
+.footer-brand span{color:var(--accent)}
+.footer-copy{font-family:var(--font-mono);font-size:.65rem;color:var(--text-dim)}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .4s ease}
+@media(max-width:768px){.nav{padding:0 1rem}.nav-links{display:none}.page-wrap{padding:2rem 1rem 4rem}}
+@media(max-width:900px){.layout-2col{grid-template-columns:1fr !important}}
+@media(max-width:600px){.flag-submit-row{flex-direction:column}}
+
+/* CHALLENGE EXTRAS */
+.layout-2col{display:grid;grid-template-columns:1fr 340px;gap:2rem;align-items:start}
+.sidebar{display:flex;flex-direction:column;gap:1.25rem}
+.side-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.4rem}
+.side-card-title{font-family:var(--font-mono);font-size:.62rem;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid var(--border)}
+.meta-row{display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid rgba(22,64,96,.4);font-family:var(--font-mono);font-size:.76rem}
+.meta-row:last-child{border-bottom:none}
+.meta-key{color:var(--text-dim)}.meta-val{color:var(--text-hi)}
+.meta-val.green{color:var(--accent)}.meta-val.amber{color:var(--accent3)}.meta-val.red{color:var(--accent2)}
+.dl-btn{display:flex;align-items:center;gap:.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.2rem;text-decoration:none;transition:all var(--transition);cursor:pointer;color:inherit;margin-bottom:.75rem}
+.dl-btn:hover{border-color:var(--accent);background:rgba(0,232,200,.06);transform:translateX(3px);color:inherit}
+.dl-icon{font-size:1.5rem;flex-shrink:0}
+.dl-name{font-family:var(--font-mono);font-size:.82rem;color:var(--accent);display:block;margin-bottom:.15rem}
+.dl-size{font-family:var(--font-mono);font-size:.62rem;color:var(--text-dim)}
+.dl-arrow{margin-left:auto;color:var(--text-dim);font-size:.9rem;transition:transform var(--transition)}
+.dl-btn:hover .dl-arrow{transform:translateX(4px);color:var(--accent)}
+.desc-block{background:var(--surface2);border-left:3px solid var(--accent4);padding:1.2rem 1.4rem;font-family:var(--font-mono);font-size:.83rem;color:var(--text);line-height:1.85;margin-bottom:1.5rem;border-radius:0 var(--radius) var(--radius) 0}
+.desc-block p+p{margin-top:.75rem}
+.desc-block .hl{color:var(--accent)}.desc-block .hl2{color:var(--accent2)}.desc-block .hl3{color:var(--accent3)}
+.solve-bar-wrap{margin-top:.6rem}
+.solve-bar-label{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:.65rem;color:var(--text-dim);margin-bottom:.35rem}
+.solve-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.solve-bar-fill{height:100%;background:var(--accent);border-radius:2px;width:0%;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.flag-submit-row{display:flex;gap:.75rem;align-items:flex-end;margin-top:0}
+.flag-submit-row .flag-input-wrap{flex:1;margin-bottom:0}
+.solved-banner{display:none;align-items:center;gap:1rem;background:rgba(0,232,200,.07);border:1px solid rgba(0,232,200,.3);border-radius:var(--radius);padding:1rem 1.4rem;margin-top:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--accent)}
+.solved-banner.show{display:flex;animation:fadeUp .4s ease}
+.solved-banner .sb-icon{font-size:1.4rem;flex-shrink:0}
+.solved-banner .sb-pts{margin-left:auto;font-family:var(--font-hud);font-size:1.1rem;font-weight:800;color:var(--accent3)}
+.terminal-emu{background:#010810;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:1.5rem}
+.emu-bar{background:var(--surface2);padding:.5rem 1rem;display:flex;align-items:center;gap:.6rem;border-bottom:1px solid var(--border)}
+.emu-dot{width:10px;height:10px;border-radius:50%}
+.emu-title{font-family:var(--font-mono);font-size:.65rem;color:var(--text-dim);margin:0 auto;letter-spacing:1px}
+.emu-body{padding:1rem 1.2rem;font-family:var(--font-mono);font-size:.78rem;line-height:1.9;color:#4a7a55}
+.epass{color:var(--accent)}.efail{color:var(--accent2)}.eprompt{color:var(--accent3)}.ecmt{color:var(--text-dim)}
+.asm-block{background:#010810;border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:.76rem;line-height:2;overflow-x:auto;margin-bottom:1.5rem;position:relative}
+.code-label{position:absolute;top:.6rem;right:.8rem;font-family:var(--font-mono);font-size:.58rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;background:var(--surface2);padding:2px 8px;border:1px solid var(--border);border-radius:20px}
+.aa{color:var(--text-dim);user-select:none;margin-right:.8rem;font-size:.7rem}
+.am{color:#7dd3fc}.ao{color:var(--accent3)}.ac{color:var(--text-dim);font-style:italic}.ah{color:var(--accent2);font-weight:bold}
+.flow-diagram{display:flex;flex-direction:column;gap:0;margin-bottom:1.5rem}
+.flow-node{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem 1.2rem;font-family:var(--font-mono);font-size:.76rem;position:relative;transition:all var(--transition)}
+.flow-node:hover{border-color:var(--accent);background:rgba(0,232,200,.03)}
+.flow-node-label{font-size:.58rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:.3rem}
+.flow-node-title{color:var(--text-hi);font-weight:bold;margin-bottom:.2rem}
+.flow-node-desc{color:var(--text-dim);font-size:.7rem;line-height:1.5}
+.flow-arrow{text-align:center;color:var(--text-dim);font-size:1.1rem;padding:.15rem 0;line-height:1}
+.flow-node.dispatch{border-color:rgba(0,232,200,.25);background:rgba(0,232,200,.03)}.flow-node.dispatch .flow-node-label{color:var(--accent)}
+.flow-node.fn-ptr{border-color:rgba(245,166,35,.25);background:rgba(245,166,35,.03)}.flow-node.fn-ptr .flow-node-label{color:var(--accent3)}
+.flow-node.check{border-color:rgba(124,58,237,.25);background:rgba(124,58,237,.03)}.flow-node.check .flow-node-label{color:#a78bfa}
+.flow-two{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.flow-node.success{border-color:rgba(0,232,200,.4)}.flow-node.fail{border-color:rgba(255,45,107,.4)}
+.dispatch-table{display:flex;flex-direction:column;gap:2px;margin-bottom:1.5rem}
+.dt-row{display:grid;grid-template-columns:100px 170px 1fr;gap:0;font-family:var(--font-mono);font-size:.74rem;align-items:stretch}
+@media(max-width:640px){.dt-row{grid-template-columns:1fr;gap:1px}}
+.dt-cell{background:#010810;border:1px solid var(--border);padding:.45rem .8rem}
+.dt-head{background:var(--surface2);border:1px solid var(--border);padding:.4rem .8rem;color:var(--text-dim);font-size:.62rem;letter-spacing:2px;text-transform:uppercase}
+.dt-idx{color:var(--text-dim);font-size:.7rem}
+.dt-ptr{color:var(--accent2)}
+.dt-fn{color:var(--accent3)}
+.dt-row:not(:first-child):hover .dt-cell{background:rgba(0,232,200,.03);border-color:var(--border2)}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="#">
+    <span class="bracket">[</span><span class="brand-flag">⚑</span>FLAG<span style="color:var(--accent)">VAULT</span><span class="bracket">]</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#">Home</a></li>
+    <li><a href="#" class="active">Challenges</a></li>
+    <li><a href="#">Scoreboard</a></li>
+    <li><a href="#">Tools</a></li>
+    <li><a href="#">Rules</a></li>
+  </ul>
+  <div class="nav-status"><span class="status-dot"></span><span>CTF LIVE</span></div>
+</nav>
+
+<div class="page-wrap">
+
+  <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--text-dim);margin-bottom:2rem;display:flex;align-items:center;gap:.5rem">
+    <a href="#" style="color:var(--text-dim)">challenges</a><span>/</span>
+    <a href="#" style="color:var(--text-dim)">reverse-engineering</a><span>/</span>
+    <span style="color:var(--accent)">hidden-flow</span>
+  </div>
+
+  <div class="page-header" data-index="RE">
+    <div class="page-eyebrow">⚙ Reverse Engineering · Challenge #09</div>
+    <h1 class="page-title"><span class="hl">Hidden</span> <span class="hl2">Flow</span></h1>
+    <p class="page-desc">This binary uses indirect jumps and function pointers to hide its validation logic. No direct calls — only a dispatch table and <code style="background:transparent;border:none;color:var(--accent2)">call rax</code>. Trace every pointer.</p>
+  </div>
+
+  <div class="layout-2col">
+    <div>
+
+      <div class="sec-divider"><h3>Description</h3></div>
+      <div class="desc-block">
+        <p>The binary accepts a secret key and validates it through <span class="hl">five hidden check functions</span>. None are called directly — all calls go through a <span class="hl2">function pointer dispatch table</span> loaded into a register at runtime, producing <code style="background:transparent;border:none;color:var(--accent)">call rax</code> instructions in the disassembly.</p>
+        <p>Static analysis will show no named function calls inside the validation loop. You must <span class="hl3">reconstruct the dispatch table</span> from the data section, follow each pointer to its target function, understand what each one checks, then derive the secret key.</p>
+        <p>The key is never stored as a plaintext string. The final check computes a <span class="hl">custom rolling hash</span> and compares it against a hardcoded constant.</p>
+      </div>
+
+      <div class="sec-divider"><h3>Control Flow Architecture</h3></div>
+      <div class="flow-diagram">
+        <div class="flow-node dispatch">
+          <div class="flow-node-label">Entry Point</div>
+          <div class="flow-node-title">main() — fgets input, strip newline</div>
+          <div class="flow-node-desc">Reads up to 127 chars, measures length, then enters a loop over i = 0..4</div>
+        </div>
+        <div class="flow-arrow">↓ for i in 0..4</div>
+        <div class="flow-node fn-ptr">
+          <div class="flow-node-label">Indirect Call Trampoline</div>
+          <div class="flow-node-title">run_check( volatile fn_ptr *tbl, idx, input, len )</div>
+          <div class="flow-node-desc">
+            <code style="background:transparent;border:none;color:var(--accent3)">mov rax, [tbl + idx*8]</code>&nbsp;&nbsp;
+            <code style="background:transparent;border:none;color:var(--accent2)">call rax</code>
+            &nbsp;— the critical indirect call. Disassemblers can't resolve this without the table.
+          </div>
+        </div>
+        <div class="flow-arrow">↓ resolves to one of 5 functions</div>
+        <div class="flow-node check">
+          <div class="flow-node-label">DISPATCH Table — 5 × 8-byte pointers in .data</div>
+          <div class="flow-node-title">check_fn DISPATCH[5] = { fn0, fn1, fn2, fn3, fn4 }</div>
+          <div class="flow-node-desc">Each entry is a function pointer. All return 0 on pass, 1 on fail.</div>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-two">
+          <div class="flow-node success">
+            <div class="flow-node-label">All 5 return 0</div>
+            <div class="flow-node-title" style="color:var(--accent)">reveal_flag()</div>
+            <div class="flow-node-desc">XOR-decodes _FLAG[] with key 0x5F and prints the flag</div>
+          </div>
+          <div class="flow-node fail">
+            <div class="flow-node-label">Any check returns 1</div>
+            <div class="flow-node-title" style="color:var(--accent2)">"Wrong key"</div>
+            <div class="flow-node-desc">all_pass = 0, exits with code 1</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-divider"><h3>Dispatch Table — Reconstructed</h3></div>
+      <div class="dispatch-table">
+        <div class="dt-row">
+          <div class="dt-head">Index</div>
+          <div class="dt-head">PIE offset</div>
+          <div class="dt-head">Target function &amp; condition</div>
+        </div>
+        <div class="dt-row">
+          <div class="dt-cell dt-idx">DISPATCH[0]</div>
+          <div class="dt-cell dt-ptr">+0x11a9</div>
+          <div class="dt-cell dt-fn">chk_length &nbsp;— pass if len == 10</div>
+        </div>
+        <div class="dt-row">
+          <div class="dt-cell dt-idx">DISPATCH[1]</div>
+          <div class="dt-cell dt-ptr">+0x11c1</div>
+          <div class="dt-cell dt-fn">chk_has_digit &nbsp;— pass if any s[i] ∈ '0'..'9'</div>
+        </div>
+        <div class="dt-row">
+          <div class="dt-cell dt-idx">DISPATCH[2]</div>
+          <div class="dt-cell dt-ptr">+0x11e0</div>
+          <div class="dt-cell dt-fn">chk_has_lower &nbsp;— pass if any s[i] ∈ 'a'..'z'</div>
+        </div>
+        <div class="dt-row">
+          <div class="dt-cell dt-idx">DISPATCH[3]</div>
+          <div class="dt-cell dt-ptr">+0x11ff</div>
+          <div class="dt-cell dt-fn">chk_has_underscore &nbsp;— pass if any s[i] == '_'</div>
+        </div>
+        <div class="dt-row">
+          <div class="dt-cell dt-idx">DISPATCH[4]</div>
+          <div class="dt-cell dt-ptr">+0x1220</div>
+          <div class="dt-cell dt-fn">chk_hash &nbsp;— pass if toy_hash(s,10) == <span style="color:var(--accent2)">0x581d3018</span></div>
+        </div>
+      </div>
+
+      <div class="sec-divider"><h3>Key Disassembly</h3></div>
+      <div class="asm-block">
+        <span class="code-label">run_check — the indirect call</span>
+        <div><span class="aa">+0x00</span><span class="am">push</span>   <span class="ao">rbp</span></div>
+        <div><span class="aa">+0x01</span><span class="am">mov</span>    <span class="ao">rbp, rsp</span></div>
+        <div><span class="aa">+0x04</span><span class="am">mov</span>    <span class="ao">[rbp-0x28], rdi</span>   <span class="ac">; tbl  = dispatch table ptr</span></div>
+        <div><span class="aa">+0x08</span><span class="am">mov</span>    <span class="ao">[rbp-0x30], rsi</span>   <span class="ac">; idx  = table index</span></div>
+        <div><span class="aa">+0x0c</span><span class="am">mov</span>    <span class="ao">[rbp-0x38], rdx</span>   <span class="ac">; s    = input string</span></div>
+        <div><span class="aa">+0x10</span><span class="am">mov</span>    <span class="ao">[rbp-0x40], rcx</span>   <span class="ac">; n    = length</span></div>
+        <br>
+        <div><span class="aa">+0x14</span><span class="am">mov</span>    <span class="ao">rax, [rbp-0x28]</span>   <span class="ac">; rax = tbl</span></div>
+        <div><span class="aa">+0x18</span><span class="am">mov</span>    <span class="ao">rdx, [rbp-0x30]</span>   <span class="ac">; rdx = idx</span></div>
+        <div><span class="aa">+0x1c</span><span class="am">mov</span>    <span class="ao">rax, [rax+rdx*8]</span>  <span class="ac">; ← load fn ptr from table</span></div>
+        <div><span class="aa">+0x20</span><span class="am">mov</span>    <span class="ao">[rbp-0x8], rax</span>    <span class="ac">; store volatile (prevents inlining)</span></div>
+        <div><span class="aa">+0x24</span><span class="am">mov</span>    <span class="ao">rax, [rbp-0x8]</span>    <span class="ac">; reload</span></div>
+        <div><span class="aa">+0x28</span><span class="am">mov</span>    <span class="ao">rsi, [rbp-0x40]</span>   <span class="ac">; arg2 = n</span></div>
+        <div><span class="aa">+0x2c</span><span class="am">mov</span>    <span class="ao">rdi, [rbp-0x38]</span>   <span class="ac">; arg1 = s</span></div>
+        <div><span class="aa">+0x30</span><span class="am ah">call</span>   <span class="ao">rax</span>               <span class="ac">; ← INDIRECT CALL — target unknown statically</span></div>
+        <div><span class="aa">+0x32</span><span class="am">pop</span>    <span class="ao">rbp</span></div>
+        <div><span class="aa">+0x33</span><span class="am">ret</span></div>
+      </div>
+      <div class="asm-block">
+        <span class="code-label">toy_hash — key comparison</span>
+        <div><span class="aa">+0x00</span><span class="am">mov</span>    <span class="ao">eax, 0xcafebabe</span>   <span class="ac">; h = init constant</span></div>
+        <div><span class="aa">+0x05</span><span class="am">xor</span>    <span class="ao">eax, ecx</span>           <span class="ac">; h ^= byte</span></div>
+        <div><span class="aa">+0x07</span><span class="am">rol</span>    <span class="ao">eax, 0xd</span>           <span class="ac">; rotate left 13</span></div>
+        <div><span class="aa">+0x0a</span><span class="am">add</span>    <span class="ao">eax, 0x9e3779b9</span>   <span class="ac">; += Fibonacci/golden ratio</span></div>
+        <div><span class="aa">+0x0f</span><span class="am">mov</span>    <span class="ao">edx, eax</span></div>
+        <div><span class="aa">+0x11</span><span class="am">shr</span>    <span class="ao">edx, 0x7</span>           <span class="ac">; tmp = h >> 7</span></div>
+        <div><span class="aa">+0x14</span><span class="am">xor</span>    <span class="ao">eax, edx</span>           <span class="ac">; h ^= tmp  (avalanche)</span></div>
+        <div><span class="aa">  ...</span></div>
+        <div><span class="aa">+0x3a</span><span class="am">xor</span>    <span class="ao">eax, 0x5a5a5a5a</span>   <span class="ac">; final XOR mix</span></div>
+        <div><span class="aa">+0x3f</span><span class="am">cmp</span>    <span class="ao">eax, 0x581d3018</span>   <span class="ac">; ← compare with expected — THIS is what you target</span></div>
+        <div><span class="aa">+0x44</span><span class="am ah">jne</span>    <span class="ao">.fail</span></div>
+      </div>
+
+      <div class="sec-divider"><h3>Runtime Demo</h3></div>
+      <div class="terminal-emu">
+        <div class="emu-bar">
+          <div class="emu-dot" style="background:#ff5f56"></div>
+          <div class="emu-dot" style="background:#ffbd2e"></div>
+          <div class="emu-dot" style="background:#27c93f"></div>
+          <div class="emu-title">bash — hidden_flow</div>
+        </div>
+        <div class="emu-body">
+          <span class="eprompt">$ chmod +x hidden_flow &amp;&amp; ./hidden_flow</span><br>
+          [*] FlagVault CTF :: Hidden Flow<br>
+          [*] Enter the secret key: <span class="eprompt">test123</span><br>
+          <span class="efail">[-] Wrong key. Keep reversing.</span><br><br>
+          <span class="ecmt">── after reconstructing the dispatch table ──</span><br><br>
+          <span class="eprompt">$ ./hidden_flow</span><br>
+          [*] FlagVault CTF :: Hidden Flow<br>
+          [*] Enter the secret key: <span class="eprompt">[key derived from hash analysis]</span><br>
+          <span class="epass">[+] Correct key! Flag: FlagVault{...}</span>
+        </div>
+      </div>
+
+      <div class="sec-divider"><h3>Downloads</h3></div>
+      <a class="dl-btn" href="files/hidden_flow" download="hidden_flow">
+        <span class="dl-icon">⚙</span>
+        <span><span class="dl-name">hidden_flow</span><span class="dl-size">ELF 64-bit PIE · Linux x86-64 · ~24 KB · run: chmod +x hidden_flow</span></span>
+        <span class="dl-arrow">→</span>
+      </a>
+      <a class="dl-btn" href="files/hidden_flow.c" download="hidden_flow.c" style="border-color:rgba(124,58,237,.4)">
+        <span class="dl-icon">📄</span>
+        <span><span class="dl-name" style="color:var(--accent4)">hidden_flow.c</span><span class="dl-size">C source — static analysis reference · ~3 KB</span></span>
+        <span class="dl-arrow">→</span>
+      </a>
+
+      <div class="sec-divider"><h3>Analysis Strategy</h3></div>
+      <div class="desc-block">
+        <p><span class="hl">Step 1 — Find the table:</span> In Ghidra open the binary. In the Symbol Tree or Defined Data view, look for a block of 5 consecutive 8-byte values in the <code style="background:transparent;border:none;color:var(--accent)">.data</code> section all pointing into <code style="background:transparent;border:none;color:var(--accent)">.text</code>. That is <code style="background:transparent;border:none;color:var(--accent)">DISPATCH[]</code>.</p>
+        <p><span class="hl">Step 2 — Follow each pointer:</span> Double-click each address. Rename the functions (chk_length, chk_digit, etc). Understand the pass condition (return 0 = pass).</p>
+        <p><span class="hl">Step 3 — Reconstruct the hash:</span> The 5th function compares <code style="background:transparent;border:none;color:var(--accent3)">toy_hash(input, 10)</code> against <code style="background:transparent;border:none;color:var(--accent2)">0x581d3018</code>. Port the algorithm to Python, then brute-force within the known char set: 10 chars, lowercase + digits + underscore.</p>
+        <p><span class="hl3">Tip: The char set is [a-z0-9_] and length is exactly 10. Combined with the hash, a targeted Python brute-force or angr symbolic execution solves it in seconds.</span></p>
+      </div>
+
+      <div class="sec-divider"><h3>Hints</h3></div>
+      <div class="hints-container">
+        <div class="hint-item" id="h1">
+          <button class="hint-toggle" onclick="revealHint('h1')">
+            <span class="hint-num">HINT 01</span>
+            Finding the dispatch table in Ghidra
+            <span class="hint-cost">-50 pts</span>
+          </button>
+          <div class="hint-content">
+            In the Ghidra CodeBrowser: open <em>Window → Defined Data</em>. Filter by pointer types. Look for a label like <code style="background:transparent;border:none">DISPATCH</code> or an unlabelled array of 5 pointers into <code style="background:transparent;border:none">.text</code>. Alternatively find <code style="background:transparent;border:none">run_check</code>, note the first argument (<code style="background:transparent;border:none">rdi</code>) — that's the table address.
+          </div>
+        </div>
+        <div class="hint-item" id="h2">
+          <button class="hint-toggle" onclick="revealHint('h2')">
+            <span class="hint-num">HINT 02</span>
+            Reimplementing toy_hash in Python
+            <span class="hint-cost">-75 pts</span>
+          </button>
+          <div class="hint-content">
+            <code style="background:transparent;border:none;color:var(--accent)">def toy_hash(s):</code><br>
+            <code style="background:transparent;border:none;color:var(--accent)">&nbsp;&nbsp;h = 0xCAFEBABE</code><br>
+            <code style="background:transparent;border:none;color:var(--accent)">&nbsp;&nbsp;for c in s.encode():</code><br>
+            <code style="background:transparent;border:none;color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;h = (h ^ c) &amp; 0xFFFFFFFF</code><br>
+            <code style="background:transparent;border:none;color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;h = ((h&lt;&lt;13)|(h>>19)) &amp; 0xFFFFFFFF</code><br>
+            <code style="background:transparent;border:none;color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;h = (h + 0x9E3779B9) &amp; 0xFFFFFFFF</code><br>
+            <code style="background:transparent;border:none;color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;h = (h ^ (h>>7)) &amp; 0xFFFFFFFF</code><br>
+            <code style="background:transparent;border:none;color:var(--accent)">&nbsp;&nbsp;return (h ^ 0x5A5A5A5A) &amp; 0xFFFFFFFF</code><br>
+            Target: <code style="background:transparent;border:none;color:var(--accent2)">0x581d3018</code>
+          </div>
+        </div>
+        <div class="hint-item" id="h3">
+          <button class="hint-toggle" onclick="revealHint('h3')">
+            <span class="hint-num">HINT 03</span>
+            Known constraints — narrow the search space
+            <span class="hint-cost">-100 pts</span>
+          </button>
+          <div class="hint-content">
+            From the dispatch table checks you know:<br>
+            — Exactly <strong style="color:var(--accent)">10 characters</strong><br>
+            — At least one <strong style="color:var(--accent)">digit</strong> (0-9)<br>
+            — At least one <strong style="color:var(--accent)">lowercase letter</strong> (a-z)<br>
+            — At least one <strong style="color:var(--accent)">underscore</strong> (_)<br><br>
+            Full charset: <code style="background:transparent;border:none;color:var(--accent3)">abcdefghijklmnopqrstuvwxyz0123456789_</code> (37 chars)<br>
+            Pattern examples: <code style="background:transparent;border:none;color:var(--accent3)">sp1d3r_w3b</code>, <code style="background:transparent;border:none;color:var(--accent3)">x_0a1b2c3d</code>
+          </div>
+        </div>
+        <div class="hint-item" id="h4">
+          <button class="hint-toggle" onclick="revealHint('h4')">
+            <span class="hint-num">HINT 04</span>
+            GDB dynamic tracing of each dispatch target
+            <span class="hint-cost">-125 pts</span>
+          </button>
+          <div class="hint-content">
+            <code style="background:transparent;border:none;color:var(--accent)">gdb -q ./hidden_flow</code><br>
+            <code style="background:transparent;border:none;color:var(--accent)">(gdb) b run_check</code><br>
+            <code style="background:transparent;border:none;color:var(--accent)">(gdb) run</code><br>
+            When it stops, step to the <code style="background:transparent;border:none">call rax</code> instruction and check:<br>
+            <code style="background:transparent;border:none;color:var(--accent)">(gdb) info registers rax</code><br>
+            This gives you the actual address of the target function for each of the 5 iterations. Repeat 5 times by continuing.
+          </div>
+        </div>
+      </div>
+
+      <div class="flag-format">
+        <span>⚑</span>
+        <span>Flag format: <strong>FlagVault{your_flag_here}</strong></span>
+      </div>
+
+      <div class="submit-section">
+        <div class="submit-title">Submit Your Flag</div>
+        <p class="submit-sub">Reconstruct the dispatch table, derive the secret key, run the binary, copy the flag output.</p>
+        <div class="flag-input-wrap">
+          <span class="prefix">FlagVault{</span>
+          <input class="form-control" id="flagInput" type="text" placeholder="your_flag_here}" autocomplete="off" spellcheck="false"/>
+        </div>
+        <div class="flag-submit-row">
+          <button class="btn btn-primary" onclick="submitFlag()">⚑ &nbsp;Submit Flag</button>
+          <button class="btn btn-danger"  onclick="clearFlag()">✕ &nbsp;Clear</button>
+        </div>
+        <div class="solved-banner" id="solvedBanner">
+          <span class="sb-icon">🏆</span>
+          <div>
+            <div style="font-weight:bold;margin-bottom:.2rem;color:var(--accent)">CORRECT — Dispatch Table Reversed!</div>
+            <div style="font-size:.72rem;color:var(--text-dim)">Every function pointer traced. Indirect calls no obstacle for you.</div>
+          </div>
+          <span class="sb-pts">+450 pts</span>
+        </div>
+        <div class="submit-result" id="wrongBanner">
+          ✕ &nbsp;Incorrect. Find the right key first, then run the binary and copy the printed flag.
+        </div>
+      </div>
+
+    </div><!-- /main -->
+
+    <aside class="sidebar">
+
+      <div class="side-card">
+        <div class="side-card-title">// Challenge Info</div>
+        <div class="meta-row"><span class="meta-key">Category</span><span class="meta-val"><span class="tag tag-purple">Reverse Eng.</span></span></div>
+        <div class="meta-row"><span class="meta-key">Difficulty</span><span class="meta-val"><span class="tag tag-red">Hard</span></span></div>
+        <div class="meta-row"><span class="meta-key">Points</span><span class="meta-val" style="color:var(--accent3)">450 pts</span></div>
+        <div class="meta-row"><span class="meta-key">Platform</span><span class="meta-val">Linux x86-64</span></div>
+        <div class="meta-row"><span class="meta-key">Binary</span><span class="meta-val"><code style="font-size:.7rem">ELF 64-bit PIE</code></span></div>
+        <div class="meta-row"><span class="meta-key">Technique</span><span class="meta-val red">call rax / fn-ptr</span></div>
+        <div class="meta-row"><span class="meta-key">Author</span><span class="meta-val green">FlagVault Team</span></div>
+        <div class="meta-row"><span class="meta-key">Solves</span><span class="meta-val green" id="solveCount">18</span></div>
+        <div class="solve-bar-wrap">
+          <div class="solve-bar-label"><span>Solve Rate</span><span id="solveRate">18 / 120</span></div>
+          <div class="solve-bar"><div class="solve-bar-fill" id="solveFill"></div></div>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <div class="side-card-title">// Recommended Tools</div>
+        <div style="display:flex;flex-direction:column;gap:.6rem">
+          <div class="tool-card" style="--tool-color:var(--accent3)">
+            <span class="tool-icon">🔬</span>
+            <div class="tool-name">Ghidra / IDA</div>
+            <span class="tool-tag">disassembler</span>
+            <p class="tool-desc">Reconstruct dispatch table. Cross-reference pointer targets.</p>
+          </div>
+          <div class="tool-card" style="--tool-color:var(--accent2)">
+            <span class="tool-icon">🐛</span>
+            <div class="tool-name">GDB + pwndbg</div>
+            <span class="tool-tag">debugger</span>
+            <p class="tool-desc">Break on <code style="background:transparent;border:none;font-size:.72rem">call rax</code>, read rax each iteration to identify all 5 targets.</p>
+          </div>
+          <div class="tool-card" style="--tool-color:var(--accent)">
+            <span class="tool-icon">🐍</span>
+            <div class="tool-name">Python 3</div>
+            <span class="tool-tag">scripting</span>
+            <p class="tool-desc">Port toy_hash, brute-force within [a-z0-9_]{10} matching constraints.</p>
+          </div>
+          <div class="tool-card" style="--tool-color:var(--accent4)">
+            <span class="tool-icon">🧩</span>
+            <div class="tool-name">angr / z3</div>
+            <span class="tool-tag">symbolic</span>
+            <p class="tool-desc">Symbolic execution — let angr solve the hash constraint automatically.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <div class="side-card-title">// Recent Solvers</div>
+        <div id="solverList"></div>
+      </div>
+
+      <div class="side-card" style="border-left:3px solid var(--accent3)">
+        <div class="side-card-title">// Platform Note</div>
+        <p style="font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);line-height:1.7">
+          Requires <strong style="color:var(--accent)">Linux x86-64</strong>.<br><br>
+          Windows/macOS — use Docker:<br>
+          <code style="display:block;margin-top:.4rem;font-size:.68rem;word-break:break-all">docker run -it --rm -v ${PWD}:/ctf ubuntu bash</code>
+        </p>
+      </div>
+
+      <div class="side-card" style="border-left:3px solid var(--accent2)">
+        <div class="side-card-title">// Flag Format</div>
+        <code style="display:block;font-size:.78rem;word-break:break-all">FlagVault{your_flag_here}</code>
+        <p style="font-family:var(--font-mono);font-size:.68rem;color:var(--text-dim);margin-top:.6rem">Run with the correct key. Copy the exact printed output.</p>
+      </div>
+
+    </aside>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-brand">FLAG<span>VAULT</span> CTF</div>
+  <div class="footer-copy">Hidden Flow &nbsp;·&nbsp; Reverse Engineering &nbsp;·&nbsp; 450 pts</div>
+</footer>
+
+<script>
+/* FlagVault CTF — Hidden Flow
+   Flag: FlagVault{1nd1r3ct_fl0w_m4st3r}
+   Array: each byte XOR 0x2D — verified correct */
+const _fe=[107,65,76,74,123,76,88,65,89,86,28,67,73,28,95,30,78,89,114,75,65,29,90,114,64,25,94,89,30,95,80];
+function _flag(){return _fe.map(b=>String.fromCharCode(b^0x2D)).join('');}
+
+function revealHint(id){const el=document.getElementById(id);if(el)el.classList.toggle('revealed');}
+
+function submitFlag(){
+  const inp=document.getElementById('flagInput');
+  const ok=document.getElementById('solvedBanner');
+  const bad=document.getElementById('wrongBanner');
+  if(!inp)return;
+  let raw=inp.value.trim();
+  let sub=raw.startsWith('FlagVault{')?raw:raw.startsWith('{')?'FlagVault'+raw:'FlagVault{'+raw;
+  ok.classList.remove('show');bad.style.display='none';bad.className='submit-result';
+  if(sub===_flag()){
+    ok.classList.add('show');
+    inp.style.borderColor='var(--accent)';inp.style.boxShadow='0 0 0 2px rgba(0,232,200,.2)';
+    document.body.style.transition='background .15s';document.body.style.background='#001a10';
+    setTimeout(()=>{document.body.style.background='';},300);
+    _inc();
+  }else{
+    bad.style.display='block';bad.classList.add('incorrect');
+    inp.style.borderColor='var(--accent2)';inp.style.boxShadow='0 0 0 2px rgba(255,45,107,.2)';
+    inp.classList.add('shake');setTimeout(()=>inp.classList.remove('shake'),500);
+  }
+}
+
+function clearFlag(){
+  const inp=document.getElementById('flagInput');
+  const ok=document.getElementById('solvedBanner');
+  const bad=document.getElementById('wrongBanner');
+  if(inp){inp.value='';inp.style.borderColor='';inp.style.boxShadow='';}
+  if(ok)ok.classList.remove('show');
+  if(bad){bad.style.display='none';bad.className='submit-result';}
+}
+
+function _inc(){
+  const el=document.getElementById('solveCount');
+  const r=document.getElementById('solveRate');
+  const f=document.getElementById('solveFill');
+  if(!el)return;
+  const n=parseInt(el.textContent,10)+1;
+  el.textContent=n;if(r)r.textContent=n+' / 120';
+  if(f)f.style.width=((n/120)*100).toFixed(1)+'%';
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const inp=document.getElementById('flagInput');
+  if(inp){
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter')submitFlag();});
+    inp.addEventListener('input',()=>{inp.style.borderColor='';inp.style.boxShadow='';});
+  }
+  setTimeout(()=>{const f=document.getElementById('solveFill');if(f)f.style.width='15%';},500);
+  const sl=document.getElementById('solverList');
+  if(sl)sl.innerHTML=[
+    {n:'f_ptr_wizard',t:'2h ago'},{n:'call_rax_42',t:'5h ago'},
+    {n:'indirect_x',t:'8h ago'},{n:'dispatch_lord',t:'11h ago'},
+    {n:'angr_bot_99',t:'15h ago'}
+  ].map(s=>`<div style="display:flex;align-items:center;justify-content:space-between;font-family:var(--font-mono);font-size:.72rem;padding:.4rem 0;border-bottom:1px solid rgba(22,64,96,.4)"><span style="color:var(--text-hi)">🔓 ${s.n}</span><span style="color:var(--text-dim)">${s.t}</span></div>`).join('');
+});
+</script>
+</body>
+</html>
