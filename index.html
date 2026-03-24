@@ -167,13 +167,6 @@ code,.mono{font-family:var(--font-mono);background:rgba(0,232,200,0.06);border:1
   <a class="nav-brand" href="#">
     <span class="bracket">[</span><span class="brand-flag">⚑</span>FLAG<span style="color:var(--accent)">VAULT</span><span class="bracket">]</span>
   </a>
-  <ul class="nav-links">
-    <li><a href="#">Home</a></li>
-    <li><a href="#" class="active">Challenges</a></li>
-    <li><a href="#">Scoreboard</a></li>
-    <li><a href="#">Tools</a></li>
-    <li><a href="#">Rules</a></li>
-  </ul>
   <div class="nav-status"><span class="status-dot"></span><span>CTF LIVE</span></div>
 </nav>
 
@@ -350,98 +343,6 @@ code,.mono{font-family:var(--font-mono);background:rgba(0,232,200,0.06);border:1
         <p><span class="hl3">Tip: The char set is [a-z0-9_] and length is exactly 10. Combined with the hash, a targeted Python brute-force or angr symbolic execution solves it in seconds.</span></p>
       </div>
 
-      <div class="sec-divider"><h3>Hints</h3></div>
-      <div class="hints-container">
-        <div class="hint-item" id="h1">
-          <button class="hint-toggle" onclick="revealHint('h1')">
-            <span class="hint-num">HINT 01</span>
-            Finding the dispatch table in Ghidra
-            <span class="hint-cost">-50 pts</span>
-          </button>
-          <div class="hint-content">
-            In the Ghidra CodeBrowser: open <em>Window → Defined Data</em>. Filter by pointer types. Look for a label like <code style="background:transparent;border:none">DISPATCH</code> or an unlabelled array of 5 pointers into <code style="background:transparent;border:none">.text</code>. Alternatively find <code style="background:transparent;border:none">run_check</code>, note the first argument (<code style="background:transparent;border:none">rdi</code>) — that's the table address.
-          </div>
-        </div>
-        <div class="hint-item" id="h2">
-          <button class="hint-toggle" onclick="revealHint('h2')">
-            <span class="hint-num">HINT 02</span>
-            Reimplementing toy_hash in Python
-            <span class="hint-cost">-75 pts</span>
-          </button>
-          <div class="hint-content">
-            <code style="background:transparent;border:none;color:var(--accent)">def toy_hash(s):</code><br>
-            <code style="background:transparent;border:none;color:var(--accent)">&nbsp;&nbsp;h = 0xCAFEBABE</code><br>
-            <code style="background:transparent;border:none;color:var(--accent)">&nbsp;&nbsp;for c in s.encode():</code><br>
-            <code style="background:transparent;border:none;color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;h = (h ^ c) &amp; 0xFFFFFFFF</code><br>
-            <code style="background:transparent;border:none;color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;h = ((h&lt;&lt;13)|(h>>19)) &amp; 0xFFFFFFFF</code><br>
-            <code style="background:transparent;border:none;color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;h = (h + 0x9E3779B9) &amp; 0xFFFFFFFF</code><br>
-            <code style="background:transparent;border:none;color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;h = (h ^ (h>>7)) &amp; 0xFFFFFFFF</code><br>
-            <code style="background:transparent;border:none;color:var(--accent)">&nbsp;&nbsp;return (h ^ 0x5A5A5A5A) &amp; 0xFFFFFFFF</code><br>
-            Target: <code style="background:transparent;border:none;color:var(--accent2)">0x581d3018</code>
-          </div>
-        </div>
-        <div class="hint-item" id="h3">
-          <button class="hint-toggle" onclick="revealHint('h3')">
-            <span class="hint-num">HINT 03</span>
-            Known constraints — narrow the search space
-            <span class="hint-cost">-100 pts</span>
-          </button>
-          <div class="hint-content">
-            From the dispatch table checks you know:<br>
-            — Exactly <strong style="color:var(--accent)">10 characters</strong><br>
-            — At least one <strong style="color:var(--accent)">digit</strong> (0-9)<br>
-            — At least one <strong style="color:var(--accent)">lowercase letter</strong> (a-z)<br>
-            — At least one <strong style="color:var(--accent)">underscore</strong> (_)<br><br>
-            Full charset: <code style="background:transparent;border:none;color:var(--accent3)">abcdefghijklmnopqrstuvwxyz0123456789_</code> (37 chars)<br>
-            Pattern examples: <code style="background:transparent;border:none;color:var(--accent3)">sp1d3r_w3b</code>, <code style="background:transparent;border:none;color:var(--accent3)">x_0a1b2c3d</code>
-          </div>
-        </div>
-        <div class="hint-item" id="h4">
-          <button class="hint-toggle" onclick="revealHint('h4')">
-            <span class="hint-num">HINT 04</span>
-            GDB dynamic tracing of each dispatch target
-            <span class="hint-cost">-125 pts</span>
-          </button>
-          <div class="hint-content">
-            <code style="background:transparent;border:none;color:var(--accent)">gdb -q ./hidden_flow</code><br>
-            <code style="background:transparent;border:none;color:var(--accent)">(gdb) b run_check</code><br>
-            <code style="background:transparent;border:none;color:var(--accent)">(gdb) run</code><br>
-            When it stops, step to the <code style="background:transparent;border:none">call rax</code> instruction and check:<br>
-            <code style="background:transparent;border:none;color:var(--accent)">(gdb) info registers rax</code><br>
-            This gives you the actual address of the target function for each of the 5 iterations. Repeat 5 times by continuing.
-          </div>
-        </div>
-      </div>
-
-      <div class="flag-format">
-        <span>⚑</span>
-        <span>Flag format: <strong>FlagVault{your_flag_here}</strong></span>
-      </div>
-
-      <div class="submit-section">
-        <div class="submit-title">Submit Your Flag</div>
-        <p class="submit-sub">Reconstruct the dispatch table, derive the secret key, run the binary, copy the flag output.</p>
-        <div class="flag-input-wrap">
-          <span class="prefix">FlagVault{</span>
-          <input class="form-control" id="flagInput" type="text" placeholder="your_flag_here}" autocomplete="off" spellcheck="false"/>
-        </div>
-        <div class="flag-submit-row">
-          <button class="btn btn-primary" onclick="submitFlag()">⚑ &nbsp;Submit Flag</button>
-          <button class="btn btn-danger"  onclick="clearFlag()">✕ &nbsp;Clear</button>
-        </div>
-        <div class="solved-banner" id="solvedBanner">
-          <span class="sb-icon">🏆</span>
-          <div>
-            <div style="font-weight:bold;margin-bottom:.2rem;color:var(--accent)">CORRECT — Dispatch Table Reversed!</div>
-            <div style="font-size:.72rem;color:var(--text-dim)">Every function pointer traced. Indirect calls no obstacle for you.</div>
-          </div>
-          <span class="sb-pts">+450 pts</span>
-        </div>
-        <div class="submit-result" id="wrongBanner">
-          ✕ &nbsp;Incorrect. Find the right key first, then run the binary and copy the printed flag.
-        </div>
-      </div>
-
     </div><!-- /main -->
 
     <aside class="sidebar">
@@ -455,9 +356,7 @@ code,.mono{font-family:var(--font-mono);background:rgba(0,232,200,0.06);border:1
         <div class="meta-row"><span class="meta-key">Binary</span><span class="meta-val"><code style="font-size:.7rem">ELF 64-bit PIE</code></span></div>
         <div class="meta-row"><span class="meta-key">Technique</span><span class="meta-val red">call rax / fn-ptr</span></div>
         <div class="meta-row"><span class="meta-key">Author</span><span class="meta-val green">FlagVault Team</span></div>
-        <div class="meta-row"><span class="meta-key">Solves</span><span class="meta-val green" id="solveCount">18</span></div>
         <div class="solve-bar-wrap">
-          <div class="solve-bar-label"><span>Solve Rate</span><span id="solveRate">18 / 120</span></div>
           <div class="solve-bar"><div class="solve-bar-fill" id="solveFill"></div></div>
         </div>
       </div>
